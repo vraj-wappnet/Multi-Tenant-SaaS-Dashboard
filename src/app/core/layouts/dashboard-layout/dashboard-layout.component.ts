@@ -5,7 +5,7 @@ import { ThemeService } from "../../services/theme.service";
 import { AuthService } from "../../services/auth.service";
 import { OrganizationService } from "../../services/organization.service";
 import { Organization } from "../../../shared/models/organization.model";
-import { User } from "../../../shared/models/user.model"; // Adjust the path as needed
+import { User } from "../../../shared/models/user.model";
 import { FormsModule } from "@angular/forms";
 import { ToastService } from "../../services/toast.service";
 
@@ -107,13 +107,8 @@ import { ToastService } from "../../services/toast.service";
           </nav>
         </div>
 
+        <!-- Sidebar Footer -->
         <div class="sidebar-footer">
-          <button class="theme-toggle" (click)="toggleTheme()">
-            <span class="toggle-icon">{{ isDarkMode ? "☀️" : "🌙" }}</span>
-            <span class="toggle-text">{{
-              isDarkMode ? "Light Mode" : "Dark Mode"
-            }}</span>
-          </button>
           <button class="logout-btn" (click)="logout()">
             <span class="nav-icon">🚪</span>
             <span class="nav-text">Logout</span>
@@ -130,6 +125,12 @@ import { ToastService } from "../../services/toast.service";
             <h2 class="header-title">{{ pageTitle }}</h2>
           </div>
           <div class="header-right">
+            <button class="theme-toggle" (click)="toggleTheme()">
+              <span class="toggle-icon">{{ isDarkMode ? "☀️" : "🌙" }}</span>
+              <span class="toggle-text">{{
+                isDarkMode ? "Light Mode" : "Dark Mode"
+              }}</span>
+            </button>
             <div class="user-info">
               <span class="user-name">{{ currentUser?.name }}</span>
               <span class="user-role badge badge-primary">{{
@@ -214,8 +215,6 @@ import { ToastService } from "../../services/toast.service";
       }
 
       .sidebar-content {
-        flex: 1;
-        overflow-y: auto;
         padding: var(--space-4) 0;
       }
 
@@ -272,7 +271,7 @@ import { ToastService } from "../../services/toast.service";
       }
 
       .sidebar-footer {
-        padding: var(--space-4);
+        padding: var(--space-5);
         border-top: 1px solid var(--border-color);
       }
 
@@ -282,7 +281,6 @@ import { ToastService } from "../../services/toast.service";
         align-items: center;
       }
 
-      .theme-toggle,
       .logout-btn {
         display: flex;
         align-items: center;
@@ -297,7 +295,6 @@ import { ToastService } from "../../services/toast.service";
         transition: background-color var(--transition-fast) ease-in-out;
       }
 
-      .theme-toggle:hover,
       .logout-btn:hover {
         background-color: var(--bg-secondary);
         color: var(--text-primary);
@@ -352,6 +349,7 @@ import { ToastService } from "../../services/toast.service";
       .header-right {
         display: flex;
         align-items: center;
+        gap: var(--space-4);
       }
 
       .user-info {
@@ -362,6 +360,28 @@ import { ToastService } from "../../services/toast.service";
 
       .user-name {
         font-weight: 500;
+      }
+
+      .theme-toggle {
+        display: flex;
+        align-items: center;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: var(--space-2);
+        color: var(--text-secondary);
+        border-radius: var(--radius-md);
+        transition: background-color var(--transition-fast) ease-in-out;
+      }
+
+      .theme-toggle:hover {
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+      }
+
+      .toggle-icon {
+        margin-right: var(--space-2);
+        font-size: var(--text-md);
       }
 
       /* Page Content */
@@ -411,7 +431,7 @@ export class DashboardLayoutComponent {
   isDarkMode = false;
   sidebarCollapsed = false;
   pageTitle = "Dashboard";
-  currentUser: User | null = null; // Initialize as null
+  currentUser: User | null = null;
   organizations: Organization[] = [];
   selectedOrgId: string | null = null;
   toasts: any[] = [];
@@ -433,12 +453,10 @@ export class DashboardLayoutComponent {
       this.toasts = toasts;
     });
 
-    // Subscribe to user changes
     this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
-      this.sidebarCollapsed = false; // Reset sidebar when user changes
+      this.sidebarCollapsed = false;
 
-      // Load organizations for super admin
       if (this.isSuperAdmin) {
         this.orgService.getOrganizations().subscribe((orgs) => {
           this.organizations = orgs;
@@ -456,7 +474,7 @@ export class DashboardLayoutComponent {
   }
 
   logout() {
-    this.sidebarCollapsed = false; // Reset sidebar state
+    this.sidebarCollapsed = false;
     this.authService.logout();
   }
 

@@ -17,7 +17,6 @@ import { ToastService } from "../../../core/services/toast.service";
       <div class="login-card">
         <div class="login-header">
           <h1 class="login-title">SaaSHub</h1>
-          <p class="login-subtitle">Multi-tenant Admin Dashboard</p>
         </div>
 
         <form class="login-form" (submit)="onSubmit()">
@@ -85,9 +84,6 @@ import { ToastService } from "../../../core/services/toast.service";
           >
             <div class="demo-account-role">Basic User</div>
           </div>
-          <p class="text-center text-muted mt-3">
-            Click any account to fill credentials<br />Use password: "password"
-          </p>
         </div>
       </div>
     </div>

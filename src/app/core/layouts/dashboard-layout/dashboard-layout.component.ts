@@ -184,6 +184,10 @@ import { MatIconModule } from "@angular/material/icon";
 
       /* Sidebar */
       .sidebar {
+        position: fixed; /* Make sidebar fixed */
+        top: 0;
+        bottom: 0;
+        left: 0;
         width: 280px;
         background-color: var(--bg-tertiary);
         border-right: 1px solid var(--border-color);
@@ -196,6 +200,20 @@ import { MatIconModule } from "@angular/material/icon";
 
       .sidebar.collapsed {
         width: 70px;
+      }
+
+      /* Main Content */
+      .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        margin-left: 280px; /* Offset to account for sidebar width */
+        overflow-x: hidden;
+        transition: margin-left var(--transition-normal) ease-in-out;
+      }
+
+      .sidebar.collapsed ~ .main-content {
+        margin-left: 70px; /* Adjust margin when sidebar is collapsed */
       }
 
       .sidebar-header {

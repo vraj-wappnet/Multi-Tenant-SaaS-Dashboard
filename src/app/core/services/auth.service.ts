@@ -119,7 +119,7 @@ export class AuthService {
     localStorage.removeItem(this.STORAGE_KEY);
     this.router.navigate(["/login"]);
     this.toastService.show({
-      type: "info",
+      type: "error",
       message: "You have been logged out",
     });
   }

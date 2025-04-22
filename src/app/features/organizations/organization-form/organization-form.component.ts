@@ -96,7 +96,6 @@ import { ToastService } from "../../../core/services/toast.service";
                   name="logo"
                   class="form-input"
                   [(ngModel)]="organization.logo"
-                  placeholder="https://example.com/logo.png"
                 />
                 @if (organization.logo) {
                 <div class="logo-preview">

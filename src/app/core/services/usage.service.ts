@@ -171,14 +171,7 @@ export class UsageService {
     return of(quota).pipe(delay(300));
   }
 
-  exportUsageData(
-    organizationId: string,
-    format: "csv" | "pdf"
-  ): Observable<string> {
-    if (format === "pdf") {
-      return of("PDF export not supported").pipe(delay(1000));
-    }
-
+  exportUsageData(organizationId: string): Observable<string> {
     // Fetch usage data for CSV export
     return this.getUsageData(organizationId).pipe(
       switchMap((usageData) => {

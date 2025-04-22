@@ -6,11 +6,12 @@ import { OrganizationService } from "../../core/services/organization.service";
 import { UserService } from "../../core/services/user.service";
 import { Organization } from "../../shared/models/organization.model";
 import { User } from "../../shared/models/user.model";
+import { MatIconModule } from "@angular/material/icon";
 
 @Component({
   selector: "app-dashboard",
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, MatIconModule],
   template: `
     <div class="dashboard">
       <h1>Dashboard</h1>
@@ -18,7 +19,7 @@ import { User } from "../../shared/models/user.model";
       <!-- Stats Overview -->
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-icon">🏢</div>
+          <mat-icon class="stat-icon icon-primary">business</mat-icon>
           <div class="stat-content">
             <div class="stat-value">{{ organizationsCount }}</div>
             <div class="stat-label">Organizations</div>
@@ -26,7 +27,7 @@ import { User } from "../../shared/models/user.model";
         </div>
 
         <div class="stat-card">
-          <div class="stat-icon">👥</div>
+          <mat-icon class="stat-icon icon-purple">group</mat-icon>
           <div class="stat-content">
             <div class="stat-value">{{ usersCount }}</div>
             <div class="stat-label">Users</div>
@@ -34,7 +35,7 @@ import { User } from "../../shared/models/user.model";
         </div>
 
         <div class="stat-card">
-          <div class="stat-icon">✅</div>
+          <mat-icon class="stat-icon icon-success">check_circle</mat-icon>
           <div class="stat-content">
             <div class="stat-value">{{ activeOrgsCount }}</div>
             <div class="stat-label">Active Organizations</div>
@@ -42,7 +43,7 @@ import { User } from "../../shared/models/user.model";
         </div>
 
         <div class="stat-card">
-          <div class="stat-icon">🔌</div>
+          <mat-icon class="stat-icon icon-teal">toggle_on</mat-icon>
           <div class="stat-content">
             <div class="stat-value">{{ featuresCount }}</div>
             <div class="stat-label">Active Features</div>
@@ -56,75 +57,75 @@ import { User } from "../../shared/models/user.model";
         <div class="quick-actions">
           @if (isSuperAdmin) {
           <a routerLink="/organizations" class="quick-action-card">
-            <div class="quick-action-icon">📋</div>
+            <mat-icon class="quick-action-icon icon-primary">list_alt</mat-icon>
             <div class="quick-action-title">Manage Organizations</div>
           </a>
           <a routerLink="/features" class="quick-action-card">
-            <div class="quick-action-icon">🔌</div>
+            <mat-icon class="quick-action-icon icon-teal">toggle_on</mat-icon>
             <div class="quick-action-title">Feature Toggles</div>
           </a>
           <a routerLink="/usage" class="quick-action-card">
-            <div class="quick-action-icon">📊</div>
+            <mat-icon class="quick-action-icon icon-purple">analytics</mat-icon>
             <div class="quick-action-title">Usage Analytics</div>
           </a>
           } @if (isOrgAdmin) {
           <a routerLink="/users" class="quick-action-card">
-            <div class="quick-action-icon">👥</div>
+            <mat-icon class="quick-action-icon icon-purple">group</mat-icon>
             <div class="quick-action-title">Manage Users</div>
           </a>
           <a routerLink="/features" class="quick-action-card">
-            <div class="quick-action-icon">🔌</div>
+            <mat-icon class="quick-action-icon icon-teal">toggle_on</mat-icon>
             <div class="quick-action-title">Feature Settings</div>
           </a>
           <a routerLink="/usage" class="quick-action-card">
-            <div class="quick-action-icon">📊</div>
+            <mat-icon class="quick-action-icon icon-purple">analytics</mat-icon>
             <div class="quick-action-title">Usage Reports</div>
           </a>
           } @if (isUser) {
           <a routerLink="/profile" class="quick-action-card">
-            <div class="quick-action-icon">👤</div>
+            <mat-icon class="quick-action-icon icon-primary">person</mat-icon>
             <div class="quick-action-title">My Profile</div>
           </a>
           <div class="quick-action-card">
-            <div class="quick-action-icon">📝</div>
+            <mat-icon class="quick-action-icon icon-warning">history</mat-icon>
             <div class="quick-action-title">My Activity</div>
           </div>
           <div class="quick-action-card">
-            <div class="quick-action-icon">❓</div>
+            <mat-icon class="quick-action-icon icon-secondary">help</mat-icon>
             <div class="quick-action-title">Help & Support</div>
           </div>
           }
         </div>
       </div>
 
-      <!-- Recent Activity (Placeholder) -->
+      <!-- Recent Activity -->
       <div class="section">
         <h2>Recent Activity</h2>
         <div class="card">
           <div class="activity-list">
             <div class="activity-item">
-              <div class="activity-icon">➕</div>
+              <mat-icon class="activity-icon icon-success">add</mat-icon>
               <div class="activity-content">
                 <div class="activity-title">New organization created</div>
                 <div class="activity-meta">Today, 10:30 AM</div>
               </div>
             </div>
             <div class="activity-item">
-              <div class="activity-icon">👤</div>
+              <mat-icon class="activity-icon icon-primary">person_add</mat-icon>
               <div class="activity-content">
                 <div class="activity-title">User John Doe invited</div>
                 <div class="activity-meta">Yesterday, 3:45 PM</div>
               </div>
             </div>
             <div class="activity-item">
-              <div class="activity-icon">🔄</div>
+              <mat-icon class="activity-icon icon-warning">sync</mat-icon>
               <div class="activity-content">
                 <div class="activity-title">Feature toggle updated</div>
                 <div class="activity-meta">May 26, 2:13 PM</div>
               </div>
             </div>
             <div class="activity-item">
-              <div class="activity-icon">🔒</div>
+              <mat-icon class="activity-icon icon-error">lock</mat-icon>
               <div class="activity-content">
                 <div class="activity-title">Organization suspended</div>
                 <div class="activity-meta">May 25, 9:27 AM</div>
@@ -140,27 +141,6 @@ import { User } from "../../shared/models/user.model";
       .dashboard {
         max-width: 1200px;
         margin: 0 auto;
-      }
-
-      .welcome-card {
-        background-color: var(--bg-tertiary);
-        border-radius: var(--radius-lg);
-        padding: var(--space-6);
-        margin-bottom: var(--space-6);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: var(--shadow-md);
-        border-left: 4px solid var(--primary-600);
-      }
-
-      .welcome-content h2 {
-        margin-bottom: var(--space-2);
-      }
-
-      .welcome-content p {
-        margin-bottom: 0;
-        color: var(--text-secondary);
       }
 
       .stats-grid {
@@ -187,6 +167,9 @@ import { User } from "../../shared/models/user.model";
       .stat-icon {
         font-size: 2rem;
         margin-right: var(--space-4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .stat-value {
@@ -235,6 +218,9 @@ import { User } from "../../shared/models/user.model";
       .quick-action-icon {
         font-size: 2rem;
         margin-bottom: var(--space-3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .quick-action-title {
@@ -258,10 +244,42 @@ import { User } from "../../shared/models/user.model";
       .activity-icon {
         margin-right: var(--space-3);
         font-size: var(--text-lg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       .activity-meta {
         font-size: var(--text-sm);
+        color: var(--text-secondary);
+      }
+
+      /* Icon color classes */
+      .icon-primary {
+        color: var(--primary-600);
+      }
+
+      .icon-success {
+        color: var(--success-600);
+      }
+
+      .icon-error {
+        color: var(--error-600);
+      }
+
+      .icon-warning {
+        color: var(--warning-600);
+      }
+
+      .icon-purple {
+        color: var(--purple-600);
+      }
+
+      .icon-teal {
+        color: var(--teal-600);
+      }
+
+      .icon-secondary {
         color: var(--text-secondary);
       }
 
@@ -273,15 +291,6 @@ import { User } from "../../shared/models/user.model";
       }
 
       @media (max-width: 768px) {
-        .welcome-card {
-          flex-direction: column;
-          text-align: center;
-        }
-
-        .welcome-actions {
-          margin-top: var(--space-4);
-        }
-
         .quick-actions {
           grid-template-columns: repeat(2, 1fr);
         }

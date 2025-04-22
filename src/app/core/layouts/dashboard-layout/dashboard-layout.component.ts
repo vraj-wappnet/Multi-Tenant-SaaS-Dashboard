@@ -8,11 +8,18 @@ import { Organization } from "../../../shared/models/organization.model";
 import { User } from "../../../shared/models/user.model";
 import { FormsModule } from "@angular/forms";
 import { ToastService } from "../../services/toast.service";
+import { MatIconModule } from "@angular/material/icon";
 
 @Component({
   selector: "app-dashboard-layout",
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, FormsModule],
+  imports: [
+    CommonModule,
+    RouterLink,
+    RouterLinkActive,
+    FormsModule,
+    MatIconModule,
+  ],
   template: `
     <div class="dashboard-layout">
       <!-- Sidebar -->
@@ -20,7 +27,9 @@ import { ToastService } from "../../services/toast.service";
         <div class="sidebar-header">
           <h1 class="sidebar-logo">SaaSHub</h1>
           <button class="sidebar-toggle" (click)="toggleSidebar()">
-            <span class="toggle-icon">{{ sidebarCollapsed ? "→" : "←" }}</span>
+            <mat-icon class="toggle-icon">
+              {{ sidebarCollapsed ? "chevron_right" : "chevron_left" }}
+            </mat-icon>
           </button>
         </div>
 
@@ -51,7 +60,7 @@ import { ToastService } from "../../services/toast.service";
                   routerLinkActive="active"
                   class="nav-link"
                 >
-                  <span class="nav-icon">📊</span>
+                  <mat-icon class="nav-icon">dashboard</mat-icon>
                   <span class="nav-text">Dashboard</span>
                 </a>
               </li>
@@ -63,7 +72,7 @@ import { ToastService } from "../../services/toast.service";
                   routerLinkActive="active"
                   class="nav-link"
                 >
-                  <span class="nav-icon">🏢</span>
+                  <mat-icon class="nav-icon">business</mat-icon>
                   <span class="nav-text">Organizations</span>
                 </a>
               </li>
@@ -75,7 +84,7 @@ import { ToastService } from "../../services/toast.service";
                   routerLinkActive="active"
                   class="nav-link"
                 >
-                  <span class="nav-icon">👥</span>
+                  <mat-icon class="nav-icon">group</mat-icon>
                   <span class="nav-text">Users</span>
                 </a>
               </li>
@@ -87,7 +96,7 @@ import { ToastService } from "../../services/toast.service";
                   routerLinkActive="active"
                   class="nav-link"
                 >
-                  <span class="nav-icon">🔌</span>
+                  <mat-icon class="nav-icon">toggle_on</mat-icon>
                   <span class="nav-text">Feature Toggles</span>
                 </a>
               </li>
@@ -98,7 +107,7 @@ import { ToastService } from "../../services/toast.service";
                   routerLinkActive="active"
                   class="nav-link"
                 >
-                  <span class="nav-icon">📈</span>
+                  <mat-icon class="nav-icon">bar_chart</mat-icon>
                   <span class="nav-text">Usage</span>
                 </a>
               </li>
@@ -109,10 +118,12 @@ import { ToastService } from "../../services/toast.service";
 
         <!-- Sidebar Footer -->
         <div class="sidebar-footer">
+          @if (currentUser) {
           <button class="logout-btn" (click)="logout()">
-            <span class="nav-icon">🚪</span>
+            <mat-icon class="nav-icon">logout</mat-icon>
             <span class="nav-text">Logout</span>
           </button>
+          }
         </div>
       </aside>
 
@@ -121,20 +132,25 @@ import { ToastService } from "../../services/toast.service";
         <!-- Header -->
         <header class="header">
           <div class="header-left">
-            <button class="menu-toggle" (click)="toggleSidebar()">☰</button>
+            <button class="menu-toggle" (click)="toggleSidebar()">
+              <mat-icon>menu</mat-icon>
+            </button>
             <h2 class="header-title">{{ pageTitle }}</h2>
           </div>
           <div class="header-right">
-            <button class="theme-toggle" (click)="toggleTheme()">
-              <span class="toggle-icon">{{ isDarkMode ? "☀️" : "🌙" }}</span>
-              <span class="toggle-text">{{
-                isDarkMode ? "Light Mode" : "Dark Mode"
-              }}</span>
+            <button
+              class="theme-toggle"
+              (click)="toggleTheme()"
+              aria-label="Toggle theme"
+            >
+              <mat-icon class="toggle-icon">
+                {{ isDarkMode ? "dark_mode" : "light_mode" }}
+              </mat-icon>
             </button>
             <div class="user-info">
-              <span class="user-name">{{ currentUser?.name }}</span>
+              <span class="user-name">{{ currentUser?.name ?? "Guest" }}</span>
               <span class="user-role badge badge-primary">{{
-                currentUser?.role
+                currentUser?.role ?? ""
               }}</span>
             </div>
           </div>
@@ -363,25 +379,24 @@ import { ToastService } from "../../services/toast.service";
       }
 
       .theme-toggle {
+        width: 40px;
+        height: 40px;
         display: flex;
         align-items: center;
-        background: none;
+        justify-content: center;
+        padding: 0;
         border: none;
+        background: transparent;
         cursor: pointer;
-        padding: var(--space-2);
-        color: var(--text-secondary);
-        border-radius: var(--radius-md);
-        transition: background-color var(--transition-fast) ease-in-out;
-      }
-
-      .theme-toggle:hover {
-        background-color: var(--bg-secondary);
-        color: var(--text-primary);
       }
 
       .toggle-icon {
-        margin-right: var(--space-2);
-        font-size: var(--text-md);
+        font-size: 28px;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
       /* Page Content */
@@ -486,7 +501,7 @@ export class DashboardLayoutComponent {
         ? `Switched to ${
             this.organizations.find((o) => o.id === this.selectedOrgId)?.name
           }`
-        : "Viewing all organizations",
+        : "Viewing all Organizations here...",
     });
   }
 }

@@ -62,7 +62,7 @@ declare var Chart: any;
       } @else if (usageData && organizationId) {
       <div class="date-range-filters">
         <div class="form-control">
-          <label class="form-label">Date Range</label>
+          <label class="form-label">Select Date: </label>
           <div class="date-inputs">
             <div>
               <label for="start-date" class="filter-sublabel">Start Date</label>
@@ -633,15 +633,15 @@ export class UsageDashboardComponent implements AfterViewInit {
   getQuotaPercentage(used: number, total: number | undefined): number {
     if (!total || total === 0) return 0;
     const percentage = (used / total) * 100;
-    return Math.min(percentage, 100); // Cap at 100%
+    return Math.min(percentage, 100);
   }
 
   isApproachingLimit(used: number, total: number | undefined): boolean {
     if (!total) return false;
-    return used / total > 0.8; // Warning when above 80%
+    return used / total > 0.8;
   }
 
-  exportData(format: "csv" | "pdf") {
+  exportData(format: "csv") {
     if (!this.selectedOrgId) {
       this.toastService.show({
         type: "warning",
@@ -650,7 +650,7 @@ export class UsageDashboardComponent implements AfterViewInit {
       return;
     }
 
-    this.usageService.exportUsageData(this.selectedOrgId, format).subscribe({
+    this.usageService.exportUsageData(this.selectedOrgId).subscribe({
       next: (result) => {
         if (format === "csv") {
           // Create a Blob for the CSV content
@@ -677,11 +677,6 @@ export class UsageDashboardComponent implements AfterViewInit {
           this.toastService.show({
             type: "success",
             message: "Usage data exported as CSV",
-          });
-        } else {
-          this.toastService.show({
-            type: "info",
-            message: "PDF export not supported",
           });
         }
       },

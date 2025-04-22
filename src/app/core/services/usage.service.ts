@@ -66,12 +66,12 @@ export class UsageService {
       case "org3": // Free
         apiCallsBase = 1000;
         activeUsersBase = 20;
-        storageBase = 500; // MB
+        storageBase = 500;
         break;
       default:
         apiCallsBase = 3000;
         activeUsersBase = 50;
-        storageBase = 1000; // MB
+        storageBase = 1000;
     }
 
     // Generate values with some randomness and trends

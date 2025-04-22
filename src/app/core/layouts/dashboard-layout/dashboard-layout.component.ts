@@ -9,6 +9,7 @@ import { User } from "../../../shared/models/user.model";
 import { FormsModule } from "@angular/forms";
 import { ToastService } from "../../services/toast.service";
 import { MatIconModule } from "@angular/material/icon";
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 @Component({
   selector: "app-dashboard-layout",
@@ -19,15 +20,26 @@ import { MatIconModule } from "@angular/material/icon";
     RouterLinkActive,
     FormsModule,
     MatIconModule,
+    MatTooltipModule,
   ],
   template: `
     <div class="dashboard-layout">
       <!-- Sidebar -->
-      <aside class="sidebar" [class.collapsed]="sidebarCollapsed">
+      <aside
+        class="sidebar"
+        [class.collapsed]="sidebarCollapsed"
+        [class.mobile-open]="mobileOpen"
+      >
         <div class="sidebar-header">
           <h1 class="sidebar-logo">SaaSHub</h1>
           <button class="sidebar-toggle" (click)="toggleSidebar()">
-            <mat-icon class="toggle-icon">
+            <mat-icon
+              class="toggle-icon"
+              [matTooltip]="
+                sidebarCollapsed ? 'Toggle Sidebar' : 'Collapse Sidebar'
+              "
+              [matTooltipDisabled]="mobileOpen"
+            >
               {{ sidebarCollapsed ? "chevron_right" : "chevron_left" }}
             </mat-icon>
           </button>
@@ -60,7 +72,13 @@ import { MatIconModule } from "@angular/material/icon";
                   routerLinkActive="active"
                   class="nav-link"
                 >
-                  <mat-icon class="nav-icon">dashboard</mat-icon>
+                  <mat-icon
+                    class="nav-icon"
+                    matTooltip="Dashboard"
+                    [matTooltipDisabled]="!sidebarCollapsed && !mobileOpen"
+                  >
+                    dashboard
+                  </mat-icon>
                   <span class="nav-text">Dashboard</span>
                 </a>
               </li>
@@ -72,7 +90,13 @@ import { MatIconModule } from "@angular/material/icon";
                   routerLinkActive="active"
                   class="nav-link"
                 >
-                  <mat-icon class="nav-icon">business</mat-icon>
+                  <mat-icon
+                    class="nav-icon"
+                    matTooltip="Organizations"
+                    [matTooltipDisabled]="!sidebarCollapsed && !mobileOpen"
+                  >
+                    business
+                  </mat-icon>
                   <span class="nav-text">Organizations</span>
                 </a>
               </li>
@@ -84,7 +108,13 @@ import { MatIconModule } from "@angular/material/icon";
                   routerLinkActive="active"
                   class="nav-link"
                 >
-                  <mat-icon class="nav-icon">group</mat-icon>
+                  <mat-icon
+                    class="nav-icon"
+                    matTooltip="Users"
+                    [matTooltipDisabled]="!sidebarCollapsed && !mobileOpen"
+                  >
+                    group
+                  </mat-icon>
                   <span class="nav-text">Users</span>
                 </a>
               </li>
@@ -96,43 +126,71 @@ import { MatIconModule } from "@angular/material/icon";
                   routerLinkActive="active"
                   class="nav-link"
                 >
-                  <mat-icon class="nav-icon">toggle_on</mat-icon>
+                  <mat-icon
+                    class="nav-icon"
+                    matTooltip="Feature Toggles"
+                    [matTooltipDisabled]="!sidebarCollapsed && !mobileOpen"
+                  >
+                    toggle_on
+                  </mat-icon>
                   <span class="nav-text">Feature Toggles</span>
                 </a>
               </li>
-
               <li class="nav-item">
                 <a
                   routerLink="/usage"
                   routerLinkActive="active"
                   class="nav-link"
                 >
-                  <mat-icon class="nav-icon">bar_chart</mat-icon>
+                  <mat-icon
+                    class="nav-icon"
+                    matTooltip="Usage"
+                    [matTooltipDisabled]="!sidebarCollapsed && !mobileOpen"
+                  >
+                    bar_chart
+                  </mat-icon>
                   <span class="nav-text">Usage</span>
                 </a>
+              </li>
+              }
+
+              <!-- Logout Button -->
+              @if (currentUser) {
+              <li class="nav-item">
+                <button class="nav-link logout-btn" (click)="logout()">
+                  <mat-icon
+                    class="nav-icon"
+                    matTooltip="Logout"
+                    [matTooltipDisabled]="!sidebarCollapsed && !mobileOpen"
+                  >
+                    logout
+                  </mat-icon>
+                  <span class="nav-text">Logout</span>
+                </button>
               </li>
               }
             </ul>
           </nav>
         </div>
-
-        <!-- Sidebar Footer -->
-        <div class="sidebar-footer">
-          @if (currentUser) {
-          <button class="logout-btn" (click)="logout()">
-            <mat-icon class="nav-icon">logout</mat-icon>
-            <span class="nav-text">Logout</span>
-          </button>
-          }
-        </div>
       </aside>
+
+      <!-- Overlay for mobile -->
+      <div
+        class="sidebar-overlay"
+        [class.active]="mobileOpen"
+        (click)="closeMobileSidebar()"
+      ></div>
 
       <!-- Main Content -->
       <main class="main-content">
         <!-- Header -->
         <header class="header">
           <div class="header-left">
-            <button class="menu-toggle" (click)="toggleSidebar()">
+            <button
+              class="menu-toggle"
+              (click)="toggleMobileSidebar()"
+              matTooltip="Open Sidebar"
+            >
               <mat-icon>menu</mat-icon>
             </button>
             <h2 class="header-title">{{ pageTitle }}</h2>
@@ -142,6 +200,7 @@ import { MatIconModule } from "@angular/material/icon";
               class="theme-toggle"
               (click)="toggleTheme()"
               aria-label="Toggle theme"
+              matTooltip="Toggle Theme"
             >
               <mat-icon class="toggle-icon">
                 {{ isDarkMode ? "dark_mode" : "light_mode" }}
@@ -177,29 +236,62 @@ import { MatIconModule } from "@angular/material/icon";
   `,
   styles: [
     `
+      :host {
+        --sidebar-width: 280px;
+        --sidebar-collapsed-width: 70px;
+        --header-height: 64px;
+        --transition-normal: 0.3s;
+        --transition-fast: 0.2s;
+        --tooltip-bg: #333333;
+        --tooltip-text: #ffffff;
+        --tooltip-border: #cccccc;
+        --tooltip-radius: 4px;
+        --tooltip-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      }
+
       .dashboard-layout {
         display: flex;
         min-height: 100vh;
+        position: relative;
       }
 
       /* Sidebar */
       .sidebar {
-        position: fixed; /* Make sidebar fixed */
+        position: fixed;
         top: 0;
         bottom: 0;
         left: 0;
-        width: 280px;
+        width: var(--sidebar-width);
         background-color: var(--bg-tertiary);
         border-right: 1px solid var(--border-color);
         display: flex;
         flex-direction: column;
-        transition: width var(--transition-normal) ease-in-out;
+        transition: all var(--transition-normal) ease-in-out;
         overflow-x: hidden;
-        z-index: 10;
+        z-index: 1000;
       }
 
       .sidebar.collapsed {
-        width: 70px;
+        width: var(--sidebar-collapsed-width);
+      }
+
+      /* Sidebar Overlay for mobile */
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        transition: opacity var(--transition-normal);
+      }
+
+      .sidebar-overlay.active {
+        display: block;
+        opacity: 1;
       }
 
       /* Main Content */
@@ -207,13 +299,13 @@ import { MatIconModule } from "@angular/material/icon";
         flex: 1;
         display: flex;
         flex-direction: column;
-        margin-left: 280px; /* Offset to account for sidebar width */
+        margin-left: var(--sidebar-width);
         overflow-x: hidden;
         transition: margin-left var(--transition-normal) ease-in-out;
       }
 
       .sidebar.collapsed ~ .main-content {
-        margin-left: 70px; /* Adjust margin when sidebar is collapsed */
+        margin-left: var(--sidebar-collapsed-width);
       }
 
       .sidebar-header {
@@ -222,6 +314,7 @@ import { MatIconModule } from "@angular/material/icon";
         justify-content: space-between;
         align-items: center;
         border-bottom: 1px solid var(--border-color);
+        flex-shrink: 0;
       }
 
       .sidebar-logo {
@@ -250,6 +343,18 @@ import { MatIconModule } from "@angular/material/icon";
 
       .sidebar-content {
         padding: var(--space-4) 0;
+        overflow-y: auto;
+        flex: 1;
+        &::-webkit-scrollbar {
+          width: 8px;
+        }
+        &::-webkit-scrollbar-thumb {
+          background-color: var(--primary-600);
+          border-radius: 4px;
+        }
+        &::-webkit-scrollbar-track {
+          background-color: var(--bg-secondary);
+        }
       }
 
       .org-selector {
@@ -304,17 +409,6 @@ import { MatIconModule } from "@angular/material/icon";
         display: none;
       }
 
-      .sidebar-footer {
-        padding: var(--space-5);
-        border-top: 1px solid var(--border-color);
-      }
-
-      .sidebar.collapsed .sidebar-footer {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-
       .logout-btn {
         display: flex;
         align-items: center;
@@ -322,11 +416,10 @@ import { MatIconModule } from "@angular/material/icon";
         border: none;
         cursor: pointer;
         width: 100%;
-        padding: var(--space-2);
+        padding: var(--space-3) var(--space-4);
         color: var(--text-secondary);
-        margin-bottom: var(--space-2);
-        border-radius: var(--radius-md);
-        transition: background-color var(--transition-fast) ease-in-out;
+        transition: all var(--transition-fast) ease-in-out;
+        border-left: 3px solid transparent;
       }
 
       .logout-btn:hover {
@@ -334,21 +427,9 @@ import { MatIconModule } from "@angular/material/icon";
         color: var(--text-primary);
       }
 
-      .sidebar.collapsed .toggle-text {
-        display: none;
-      }
-
-      /* Main Content */
-      .main-content {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        overflow-x: hidden;
-      }
-
       /* Header */
       .header {
-        height: 64px;
+        height: var(--header-height);
         padding: 0 var(--space-6);
         display: flex;
         align-items: center;
@@ -424,28 +505,87 @@ import { MatIconModule } from "@angular/material/icon";
         background-color: var(--bg-primary);
       }
 
+      /* Toast Container */
+      .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+      }
+
+      .toast {
+        background-color: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: var(--space-3);
+        margin-bottom: var(--space-2);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        animation: fadeIn 0.3s ease-in;
+      }
+
+      .toast-error {
+        border-left: 4px solid var(--danger-600);
+      }
+
+      .toast-info {
+        border-left: 4px solid var(--primary-600);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Tooltip Styles */
+      :host ::ng-deep .mat-tooltip {
+        background-color: blue; /* Blue background color */
+        color: #ffffff; /* White text color */
+        border-radius: 4px; /* Rounded corners */
+        font-size: 12px; /* Font size */
+        padding: 6px 10px; /* Padding */
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+        max-width: 200px; /* Maximum width */
+        white-space: normal; /* Allow wrapping */
+        word-wrap: break-word; /* Break long words */
+        margin-left: 8px; /* Margin for positioning */
+        transform: translateX(-50%); /* Center tooltip horizontally */
+        left: 50%; /* Position tooltip at the edge */
+      }
+
       /* Responsive styles */
       @media (max-width: 768px) {
         .sidebar {
-          position: fixed;
-          top: 0;
-          bottom: 0;
-          left: 0;
           transform: translateX(-100%);
-          z-index: 20;
-          width: 260px;
+          width: var(--sidebar-width);
+        }
+
+        .sidebar.mobile-open {
+          transform: translateX(0);
         }
 
         .sidebar.collapsed {
+          transform: translateX(-100%);
+          width: var(--sidebar-width);
+        }
+
+        .sidebar.collapsed.mobile-open {
           transform: translateX(0);
-          width: 260px;
         }
 
         .sidebar.collapsed .sidebar-logo,
         .sidebar.collapsed .nav-text,
-        .sidebar.collapsed .org-selector,
-        .sidebar.collapsed .toggle-text {
+        .sidebar.collapsed .org-selector {
           display: block;
+        }
+
+        .main-content {
+          margin-left: 0 !important;
         }
 
         .menu-toggle {
@@ -463,11 +603,12 @@ export class DashboardLayoutComponent {
 
   isDarkMode = false;
   sidebarCollapsed = false;
+  mobileOpen = false;
   pageTitle = "Dashboard";
   currentUser: User | null = null;
   organizations: Organization[] = [];
   selectedOrgId: string | null = null;
-  toasts: any[] = [];
+  toasts: { id: string; type: string; message: string }[] = [];
 
   get isSuperAdmin(): boolean {
     return this.currentUser?.role === "SUPER_ADMIN";
@@ -489,6 +630,7 @@ export class DashboardLayoutComponent {
     this.authService.currentUser$.subscribe((user) => {
       this.currentUser = user;
       this.sidebarCollapsed = false;
+      this.mobileOpen = false;
 
       if (this.isSuperAdmin) {
         this.orgService.getOrganizations().subscribe((orgs) => {
@@ -498,20 +640,33 @@ export class DashboardLayoutComponent {
     });
   }
 
-  toggleSidebar() {
-    this.sidebarCollapsed = !this.sidebarCollapsed;
+  toggleSidebar(): void {
+    if (window.innerWidth <= 768) {
+      this.mobileOpen = false;
+    } else {
+      this.sidebarCollapsed = !this.sidebarCollapsed;
+    }
   }
 
-  toggleTheme() {
+  toggleMobileSidebar(): void {
+    this.mobileOpen = !this.mobileOpen;
+  }
+
+  closeMobileSidebar(): void {
+    this.mobileOpen = false;
+  }
+
+  toggleTheme(): void {
     this.themeService.toggleTheme();
   }
 
-  logout() {
+  logout(): void {
     this.sidebarCollapsed = false;
+    this.mobileOpen = false;
     this.authService.logout();
   }
 
-  onOrganizationChange() {
+  onOrganizationChange(): void {
     this.orgService.setCurrentOrganization(this.selectedOrgId);
     this.toastService.show({
       type: "info",
